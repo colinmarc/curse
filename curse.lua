@@ -120,7 +120,7 @@ end
 -- end
 
 function grid:new(hexSize, originX, originY)
-  local g = {d=hexSize, ox=(originX or 0), oy=(originY or 0), maxQ=0, maxR=0}
+  local g = {d=hexSize, originX=(originX or 0), originY=(originY or 0), maxQ=0, maxR=0}
   return setmetatable(g, gridMt)
 end
 
@@ -131,8 +131,8 @@ function grid:addHex(q, r)
 
   local w = d * sqrt(3)
   local h = d * 3/2
-  hex.x = (w * (coordq + coordr/2)) + self.ox
-  hex.y = (h * coordr) + self.oy
+  hex.x = (w * (coordq + coordr/2)) + self.originX
+  hex.y = (h * coordr) + self.originY
   hex.vertices = {}
 
   for i=0, 6 do
@@ -193,7 +193,7 @@ function grid:neighbor(q, r, dir)
 end
 
 function grid:containingHex(x, y)
-  local x, y = x - self.ox, y - self.oy
+  local x, y = x - self.originX, y - self.originY
   local q = ((1/3 * sqrt(3) * x) - (1/3 * y)) / self.d
   local r = 2/3 * y / self.d
   q, r = roundToNearestHex(q, r)
