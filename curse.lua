@@ -33,8 +33,30 @@ local gridMt = {__index = grid}
 
 local abs, min, max = math.abs, math.min, math.max
 local ceil, floor = math.ceil, math.floor
-local cos, sin, tan = math.cos, math.sin, math.tan
+local cos, sin = math.cos, math.sin
 local sqrt, pi = math.sqrt, math.pi
+
+local function round(num)
+  return floor(num+.5)
+end
+
+local function roundToNearestHex(q, r)
+  -- convert to cube coordinates and round
+  local x, y, z = q, r, -q - r
+  local rx, ry, rz = round(q), round(r), round(z)
+
+  -- pick the largest difference and 'reset' it so that x + y + z = 0
+  local dx, dy, dz = abs(rx - x), abs(ry - y), abs(rz - z)
+  if dx > dy and dx > dz then
+    rx = -ry - rz
+  elseif dy > dz then
+    ry = -rx - rz
+  else
+    rz = -rx - ry
+  end
+
+  return rx, ry
+end
 
 function curse.createRhomboidalGrid(width, height, hexSize, originX, originY)
   local g = grid:new(hexSize, originX, originY)
@@ -129,7 +151,12 @@ function grid:addHex(q, r)
 end
 
 function grid:getHex(q, r)
-  return self[q][r]
+  local row = self[q]
+  if (row ~= nil) then
+    return row[r]
+  else
+    return nil
+  end
 end
 
 function grid:hexIterator()
@@ -166,7 +193,14 @@ function grid:neighbor(q, r, dir)
 end
 
 function grid:containingHex(x, y)
+  local x, y = x - self.ox, y - self.oy
+  local q = ((1/3 * sqrt(3) * x) - (1/3 * y)) / self.d
+  local r = 2/3 * y / self.d
+  q, r = roundToNearestHex(q, r)
 
+  -- print(x .. ", " .. y .. " translates to " .. q .. ", " .. r)
+
+  return self:getHex(q+1, r+1)
 end
 
 return curse
