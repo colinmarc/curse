@@ -7,6 +7,14 @@ function love.load()
   hexGrid = curse.createHexagonalGrid(7, 20, 450, 50)
 end
 
+function love.update()
+  mx, my = love.mouse.getPosition()
+  highlighted = rhombGrid:containingHex(mx, my) or rectGrid:containingHex(mx, my) or hexGrid:containingHex(mx, my)
+  if (highlighted) then
+    -- print("highlighted " .. highlighted.q .. ", " .. highlighted.r)
+  end
+end
+
 function love.draw()
   love.graphics.setColor(0,200,255,200)
   love.graphics.line(0,50,1000,50)
@@ -14,6 +22,7 @@ function love.draw()
   love.graphics.line(50,0,50,1000)
   love.graphics.line(450,0,450,1000)
 
+  love.graphics.setColor(255,255,255,255)
   for hex in rhombGrid:hexIterator() do
     drawHexagon(hex)
   end
@@ -25,11 +34,15 @@ function love.draw()
   for hex in hexGrid:hexIterator() do
     drawHexagon(hex)
   end
+
+  if (highlighted) then
+    love.graphics.setColor(0,200,255,200)
+    drawHexagon(highlighted)
+  end
 end
 
 function drawHexagon(hex)
-  love.graphics.setColor(255,255,255,255)
-	love.graphics.polygon(
+  love.graphics.polygon(
     'line',
     hex.vertices[1].x, hex.vertices[1].y,
     hex.vertices[2].x, hex.vertices[2].y,
