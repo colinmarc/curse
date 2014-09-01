@@ -10,9 +10,6 @@ end
 function love.update()
   mx, my = love.mouse.getPosition()
   highlighted = rhombGrid:containingHex(mx, my) or rectGrid:containingHex(mx, my) or hexGrid:containingHex(mx, my)
-  if (highlighted) then
-    -- print("highlighted " .. highlighted.q .. ", " .. highlighted.r)
-  end
 end
 
 function love.draw()
